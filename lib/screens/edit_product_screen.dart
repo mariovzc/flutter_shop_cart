@@ -32,6 +32,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     'price': ''
   };
   bool _isInit = true;
+  bool _isLoading = false;
 
 
   @override
@@ -86,6 +87,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
     _formKey.currentState.save();
+    setState(() {_isLoading = true;});
     if(_editedProduct.id != null) {
       Provider.of<Products>(
         context,
@@ -95,9 +97,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
       Provider.of<Products>(
         context,
         listen: false
-      ).addProduct(_editedProduct);
+      )
+      .addProduct(_editedProduct)
+      .then((_){
+        setState(() {_isLoading = true;});
+        Navigator.of(context).pop();
+      });
     }
-    Navigator.of(context).pop();
   }
 
   @override
@@ -112,7 +118,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
           )
         ],
       ),
-      body: Padding(
+      body: _isLoading ?
+      Center(
+        child: CircularProgressIndicator(),
+      ) :
+      Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
