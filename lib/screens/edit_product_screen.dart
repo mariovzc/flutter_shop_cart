@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/providers/product.dart';
+import 'package:shop/providers/products.dart';
 
 class EditProductScreen extends StatefulWidget {
 
@@ -50,11 +52,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
+    final isValid = _formKey.currentState.validate();
+    if (!isValid) {
+      return;
+    }
     _formKey.currentState.save();
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.imageUrl);
-    print(_editedProduct.description);
+    Provider.of<Products>(context).addProduct(_editedProduct);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -90,8 +94,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     id: null,
                     imageUrl: _editedProduct.imageUrl,
                     price: _editedProduct.price,
-                    
                   );
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please Provide a value';
+                  }
+                  return null;
                 },
               ),
               TextFormField(
@@ -113,6 +122,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     price: double.parse(value),
                   );
                 },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please provide a price';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+
+                  if (double.parse(value) <= 0) {
+                    return 'Please enter a number greather than 0';
+                  }
+
+                  return null;
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -129,6 +152,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     imageUrl: _editedProduct.imageUrl,
                     price: _editedProduct.price,
                   );
+                },
+                validator: (value){
+                  if (value.isEmpty) {
+                    return 'Please provide a description';
+                  }
+                  if (value.length < 10) {
+                    return 'should be at least 10 characters';
+                  }
+                  return null;
                 },
               ),
               Row(
@@ -171,6 +203,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           imageUrl: value,
                           price: _editedProduct.price,
                         );
+                      },
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'please provide a image url';
+                        }
+                        if (!value.startsWith('http') || !value.startsWith('https')) {
+                          return 'Please enter a valid Url';
+                        }
+                        return null;
                       },
                     ),
                   ),
