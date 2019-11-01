@@ -11,7 +11,7 @@ class UserProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Products products = Provider.of<Products>(context, listen: false);
+    final Products products = Provider.of<Products>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your products'),
@@ -36,6 +36,7 @@ class UserProducts extends StatelessWidget {
                   products.items[index].id,
                   products.items[index].title,
                   products.items[index].imageUrl,
+                  //products.deleteProduct
                 ),
                 Divider(),
               ],
