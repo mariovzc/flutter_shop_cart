@@ -85,6 +85,9 @@ class Products with ChangeNotifier{
       );
       _items.add(_newProduct);
       notifyListeners();
+    }).catchError((error) {
+      print(error);
+      throw error;
     });
   }
 
