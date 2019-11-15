@@ -89,7 +89,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _formKey.currentState.save();
     setState(() {_isLoading = true;});
     if(_editedProduct.id != null) {
-      Provider.of<Products>(
+      await Provider.of<Products>(
         context,
         listen: false
       ).updateProduct(_editedProduct.id, _editedProduct);
@@ -116,11 +116,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ],
           ),
         );
-      } finally {
-        setState(() {_isLoading = true;});
-        Navigator.of(context).pop();
-      }
+      }// finally {
+      //   setState(() {_isLoading = false;});
+      //   Navigator.of(context).pop();
+      // }
     }
+    setState(() {_isLoading = false;});
+    Navigator.of(context).pop();
   }
 
   @override
