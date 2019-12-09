@@ -21,37 +21,6 @@ class ProductsOverViewScreen extends StatefulWidget {
 
 class _ProductsOverViewScreenState extends State<ProductsOverViewScreen> {
   bool _showOnlyFavorites=false;
-  bool _isInit = true;
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    // Future.delayed(Duration.zero).then((_) {
-    //   Provider.of<Products>(context).getAll();
-    // });
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    if (_isInit) {
-      setState(() {
-        _isLoading = true;
-      });
-      Provider.of<Products>(context)
-        .getAll()
-        .then((_) {
-          setState(() {
-             _isLoading = false;
-          });
-        });
-    }
-    _isInit  = false;
-    super.didChangeDependencies();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,11 +64,24 @@ class _ProductsOverViewScreenState extends State<ProductsOverViewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: _isLoading
-      ? Center(
-          child: CircularProgressIndicator(),
-        )
-      : ProductsGrid(_showOnlyFavorites),
+      body: FutureBuilder(
+        future: Provider.of<Products>(context, listen: false).getAll(),
+        builder: (_, dataSnapshot) {
+          if (dataSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            if(dataSnapshot.error != null ) {
+              return Center(
+                child: Text('Error'),
+              );
+            } else {
+              return ProductsGrid(_showOnlyFavorites);
+            }
+          }
+        },
+      ) 
     );
   }
 }
