@@ -47,29 +47,30 @@ class _OrderItemState extends State<OrderItem> {
               widget.order.products.length * 20.0 + 10,
               100),
             child: ListView(
-              children: widget
-                          .order
-                          .products
-                          .map((prod)=> Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                prod.title,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                '${prod.quantity}x \$${prod.price}',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ))
-                          .toList(),
+              children: 
+                widget
+                  .order
+                  .products
+                  .map((prod)=> Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        prod.title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${prod.quantity}x \$${prod.price}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ))
+                  .toList(),
             ),
           )
         ],

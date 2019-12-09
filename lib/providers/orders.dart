@@ -40,29 +40,29 @@ class Orders  with ChangeNotifier{
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    final _url = 'https://products-flutter-example.firebaseio.com/products.json';
-
-    _items.insert(0, OrderItem(
-      id: DateTime.now().toString(),
-      products: cartProducts,
-      amount: total,
-      dateTime: DateTime.now()
-    ));
-
+    final _url = 'https://products-flutter-example.firebaseio.com/orders.json';
+    final timestamp = DateTime.now();
     try {
       final response = await http.post(
         _url,
         body: json.encode({
+          'ammount': total,
+          'dateTime': timestamp.toIso8601String(),
+          'products': cartProducts.map((cp) => {
+              'id': cp.id,
+              'title': cp.title,
+              'quantity': cp.quantity,
+              'price': cp.price
+          }).toList(),
         }),
       );
-      final _newProduct = Product(
-        title: product.title,
-        description: product.description,
-        price: product.price,
+      
+      _items.insert(0, OrderItem(
         id: json.decode(response.body)['name'],
-        imageUrl: product.imageUrl,
-      );
-      _items.add(_newProduct);
+        products: cartProducts,
+        amount: total,
+        dateTime: DateTime.now()
+      ));
       notifyListeners();
     } catch (error) {
       print(error);
