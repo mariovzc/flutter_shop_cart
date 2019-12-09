@@ -19,24 +19,36 @@ class OrderItem {
 }
 
 class Orders  with ChangeNotifier{
-  List<OrderItem> _items = [
-    OrderItem(
-      id: DateTime.now().toString(),
-      dateTime: DateTime.now(),
-      amount: 2000,
-      products: [
-        CartItem(
-          id: DateTime.now().toString(),
-          price: 2000,
-          quantity: 1,
-          title: 'Item',
-        )
-      ]
-    )
-  ];
+  List<OrderItem> _items = [];
 
   List<OrderItem> get items {
     return [..._items];
+  }
+
+  Future<void> fetchAndSetOrders() async {
+    final _url = 'https://products-flutter-example.firebaseio.com/orders.json';
+    final response = await http.get(_url);
+    List<OrderItem> loadedOrders = [];
+
+    final extractedData = json.decode(response.body) as Map<String ,dynamic>;
+    if (extractedData == null) return;
+    extractedData.forEach((orderId, orderData) {
+      loadedOrders.add(OrderItem(
+        id: orderId,
+        amount: orderData['amount'],
+        dateTime: DateTime.parse(orderData['dateTime']),
+        products: (orderData['products'] as List<dynamic>)
+        .map((item) => CartItem(
+          id: item['id'],
+          price: item['price'],
+          quantity: item['quantity'],
+          title: item['title'],
+        ))
+        .toList()
+      ));
+    });
+    _items = loadedOrders.reversed.toList();
+    notifyListeners();
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
@@ -46,7 +58,7 @@ class Orders  with ChangeNotifier{
       final response = await http.post(
         _url,
         body: json.encode({
-          'ammount': total,
+          'amount': total,
           'dateTime': timestamp.toIso8601String(),
           'products': cartProducts.map((cp) => {
               'id': cp.id,
